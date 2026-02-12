@@ -65,10 +65,10 @@ export function LetterSelector({
                   <div key={level.level}>
                     <div className="flex items-center gap-2 mb-2">
                       <span
-                        className="h-3 w-3 rounded-full"
+                        className="h-4 w-4 rounded-full"
                         style={{ backgroundColor: level.color }}
                       />
-                      <h5 className="text-sm font-semibold font-headline text-foreground">
+                      <h5 className="text-lg font-bold font-headline text-foreground">
                         {level.name}
                       </h5>
                     </div>
