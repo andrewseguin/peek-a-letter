@@ -59,7 +59,7 @@ export function LetterSelector({
                 Select the letters you want to practice.
               </p>
             </div>
-            <ScrollArea className="h-64">
+            <ScrollArea className="h-[500px]">
               <div className="space-y-4 pr-4">
                 {LETTER_LEVELS.map((level) => (
                   <div key={level.level}>
