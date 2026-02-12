@@ -4,7 +4,7 @@ const isGithubActions = process.env.GITHUB_ACTIONS === 'true'
 
 const nextConfig: NextConfig = {
   output: 'export',
-  basePath: isGithubActions ? '/Peek-a-Letter' : '',
+  basePath: isGithubActions ? '/studio' : '',
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
