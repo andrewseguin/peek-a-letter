@@ -35,7 +35,7 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
       <CardContent className="p-0 h-full flex items-center justify-center">
         <span
           className={cn(
-            "font-headline font-normal text-[13rem] leading-none text-white",
+            "font-headline font-normal text-[12rem] leading-tight text-white",
             "select-none [text-shadow:3px_3px_6px_rgba(0,0,0,0.2)]"
           )}
         >
