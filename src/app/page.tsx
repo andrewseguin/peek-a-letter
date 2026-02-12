@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import useLocalStorage from "@/hooks/use-local-storage";
 import { DEFAULT_LETTERS, getLetterData } from "@/lib/letters";
 import { LetterSelector } from "@/components/letter-selector";
 import { LetterDisplay } from "@/components/letter-display";
-import { Loader } from "lucide-react";
 
 const shuffle = (array: string[]) => {
   let currentIndex = array.length,
@@ -35,6 +34,7 @@ export default function Home() {
   );
 
   const [lettersInCycle, setLettersInCycle] = useState<string[]>([]);
+  const lastChangeTimeRef = useRef(0);
 
   const availableLetters = useMemo(() => {
     return selectedLetters.length > 0 ? selectedLetters : [];
@@ -52,7 +52,6 @@ export default function Home() {
   }
 
   const [displayContent, setDisplayContent] = useState<DisplayContent>(getInitialLetter());
-  const [isLoading, setIsLoading] = useState(false);
   
   useEffect(() => {
     setLettersInCycle([]);
@@ -85,8 +84,11 @@ export default function Home() {
   }, [availableLetters, displayContent]);
 
   const showNextContent = useCallback(() => {
-    if (isLoading) return;
-    setIsLoading(true);
+    const now = Date.now();
+    if (now - lastChangeTimeRef.current < 1000) {
+      return;
+    }
+    lastChangeTimeRef.current = now;
 
     if (availableLetters.length === 0) {
       setDisplayContent({
@@ -94,7 +96,6 @@ export default function Home() {
         type: "message",
         value: "Choose some letters in the menu!",
       });
-      setTimeout(() => setIsLoading(false), 1000);
       return;
     }
 
@@ -115,9 +116,7 @@ export default function Home() {
       value: newLetter,
       color: letterData?.color,
     });
-
-    setTimeout(() => setIsLoading(false), 1000);
-  }, [isLoading, availableLetters, lettersInCycle, setLettersInCycle]);
+  }, [availableLetters, lettersInCycle, setLettersInCycle]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -144,11 +143,6 @@ export default function Home() {
         selectedLetters={selectedLetters}
         setSelectedLetters={setSelectedLetters}
       />
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <Loader className="h-16 w-16 animate-spin text-primary" />
-        </div>
-      )}
     </main>
   );
 }
