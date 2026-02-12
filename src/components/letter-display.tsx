@@ -32,8 +32,13 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
   return (
     <Card
       key={content.key}
-      className="shadow-xl animate-in fade-in zoom-in-95 duration-300 w-[700px] h-[350px] border-none"
-      style={{ backgroundColor: content.color }}
+      className="animate-in fade-in zoom-in-95 duration-300 w-[700px] h-[350px] border-none"
+      style={{ 
+        backgroundColor: content.color,
+        boxShadow: "0 1px 1px rgba(0,0,0,0.12), 0 2px 2px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12), 0 8px 8px rgba(0,0,0,0.12), 0 16px 16px rgba(0,0,0,0.12)",
+        borderTop: "1px solid rgba(255,255,255,0.2)",
+        borderLeft: "1px solid rgba(255,255,255,0.1)",
+      }}
     >
       <CardContent className="p-0 h-full flex items-center justify-center">
         <span
