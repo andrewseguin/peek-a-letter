@@ -114,6 +114,18 @@ export default function Home() {
     let currentCycle = lettersInCycle;
     if (currentCycle.length === 0) {
       currentCycle = shuffle([...availableLetters]);
+      // Prevent same letter twice in a row if there's more than one letter
+      if (
+        availableLetters.length > 1 &&
+        currentCycle[0] === displayContent.value
+      ) {
+        // Swap first element with a random subsequent element
+        const randomIndex = 1 + Math.floor(Math.random() * (currentCycle.length - 1));
+        [currentCycle[0], currentCycle[randomIndex]] = [
+          currentCycle[randomIndex],
+          currentCycle[0],
+        ];
+      }
     }
     
     const newLetter = currentCycle[0];
