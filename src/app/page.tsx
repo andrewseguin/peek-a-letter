@@ -96,7 +96,7 @@ export default function Home() {
 
   const showNextContent = useCallback(() => {
     const now = Date.now();
-    if (now - lastChangeTimeRef.current < 300) {
+    if (now - lastChangeTimeRef.current < 100) {
       return;
     }
     lastChangeTimeRef.current = now;
