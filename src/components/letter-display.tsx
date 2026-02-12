@@ -10,6 +10,7 @@ type DisplayContent = {
   value: string;
   color?: string;
   textColor?: string;
+  verticalOffset?: number;
 };
 
 type LetterDisplayProps = {
@@ -40,7 +41,11 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
             "font-headline font-normal text-[15rem] leading-none",
             "select-none [text-shadow:3px_3px_6px_rgba(0,0,0,0.2)]"
           )}
-          style={{ color: content.textColor || 'white' }}
+          style={{
+            color: content.textColor || 'white',
+            transform: `translateY(${content.verticalOffset || 0}rem)`,
+            transition: 'transform 0.2s ease-out'
+          }}
         >
           {content.value}
         </span>

@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import useLocalStorage from "@/hooks/use-local-storage";
-import { DEFAULT_LETTERS, getLetterData } from "@/lib/letters";
+import { DEFAULT_LETTERS, getLetterInfo } from "@/lib/letters";
 import { LetterSelector } from "@/components/letter-selector";
 import { LetterDisplay } from "@/components/letter-display";
 
@@ -27,6 +27,7 @@ type DisplayContent = {
   value: string;
   color?: string;
   textColor?: string;
+  verticalOffset?: number;
 };
 
 export default function Home() {
@@ -47,13 +48,14 @@ export default function Home() {
   
   const getInitialLetter = () => {
     const letter = availableLetters.length > 0 ? availableLetters[0] : 'a';
-    const data = getLetterData(letter);
+    const data = getLetterInfo(letter);
     return {
       key: "initial",
       type: "letter" as const,
       value: letter,
       color: data?.color,
       textColor: data?.textColor,
+      verticalOffset: data?.verticalOffset,
     }
   }
 
@@ -79,13 +81,14 @@ export default function Home() {
       !availableLetters.includes(displayContent.value)
     ) {
       const firstLetter = availableLetters[0];
-      const data = getLetterData(firstLetter);
+      const data = getLetterInfo(firstLetter);
       setDisplayContent({
         key: "update-from-selection",
         type: "letter",
         value: firstLetter,
         color: data?.color,
         textColor: data?.textColor,
+        verticalOffset: data?.verticalOffset,
       });
     }
   }, [availableLetters, displayContent]);
@@ -115,7 +118,7 @@ export default function Home() {
     const newCycle = currentCycle.slice(1);
     setLettersInCycle(newCycle);
 
-    const letterData = getLetterData(newLetter);
+    const letterData = getLetterInfo(newLetter);
 
     setDisplayContent({
       key: Date.now().toString(),
@@ -123,6 +126,7 @@ export default function Home() {
       value: newLetter,
       color: letterData?.color,
       textColor: letterData?.textColor,
+      verticalOffset: letterData?.verticalOffset,
     });
   }, [availableLetters, lettersInCycle, setLettersInCycle]);
 

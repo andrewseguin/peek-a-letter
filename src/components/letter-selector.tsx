@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Settings } from "lucide-react";
@@ -73,20 +74,20 @@ export function LetterSelector({
                     </div>
                     <div className="grid grid-cols-4 gap-4 ml-5">
                       {level.letters.map((letter) => (
-                        <div key={letter} className="flex items-center space-x-2">
+                        <div key={letter.char} className="flex items-center space-x-2">
                           <Checkbox
-                            id={`letter-${letter}`}
-                            checked={selectedLetters.includes(letter)}
+                            id={`letter-${letter.char}`}
+                            checked={selectedLetters.includes(letter.char)}
                             onCheckedChange={(checked) =>
-                              handleLetterChange(letter, !!checked)
+                              handleLetterChange(letter.char, !!checked)
                             }
-                            aria-label={letter}
+                            aria-label={letter.char}
                           />
                           <Label
-                            htmlFor={`letter-${letter}`}
+                            htmlFor={`letter-${letter.char}`}
                             className="text-lg font-medium font-headline cursor-pointer"
                           >
-                            {letter}
+                            {letter.char}
                           </Label>
                         </div>
                       ))}
