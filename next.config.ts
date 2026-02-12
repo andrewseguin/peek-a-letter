@@ -1,7 +1,9 @@
 import type {NextConfig} from 'next';
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'export',
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -9,6 +11,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -30,6 +33,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // This is needed for GitHub Pages, as it hosts in a subdirectory.
+  basePath: isProd ? '/studio' : '',
 };
 
 export default nextConfig;
