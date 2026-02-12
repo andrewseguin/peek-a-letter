@@ -22,7 +22,7 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
     return (
       <div
         key={content.key}
-        className="max-w-xl font-body text-3xl sm:text-4xl md:text-5xl font-semibold text-accent px-8 text-center select-none animate-in fade-in duration-500"
+        className="max-w-xl font-body text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground/70 px-8 text-center select-none animate-in fade-in duration-500"
       >
         {content.value}
       </div>
