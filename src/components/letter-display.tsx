@@ -29,13 +29,13 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
   return (
     <Card
       key={content.key}
-      className="shadow-xl animate-in fade-in zoom-in-95 duration-300 w-[480px] h-[240px] border-none"
+      className="shadow-xl animate-in fade-in zoom-in-95 duration-300 w-[600px] h-[300px] border-none"
       style={{ backgroundColor: content.color }}
     >
       <CardContent className="p-0 h-full flex items-center justify-center">
         <span
           className={cn(
-            "font-headline font-normal text-[12rem] leading-tight text-white",
+            "font-headline font-normal text-[15rem] leading-none text-white",
             "select-none [text-shadow:3px_3px_6px_rgba(0,0,0,0.2)]"
           )}
         >
