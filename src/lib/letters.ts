@@ -1,9 +1,9 @@
 export const LETTER_LEVELS = [
-  { level: 1, name: "Level 1", letters: ["s", "a", "t", "p", "i", "n"], color: "#A7D8A7" },
-  { level: 2, name: "Level 2", letters: ["c", "o", "d", "m", "k"], color: "#A7C7E7" },
-  { level: 3, name: "Level 3", letters: ["e", "r", "g", "b", "h"], color: "#FDFD96" },
-  { level: 4, name: "Level 4", letters: ["w", "j", "l", "u", "f"], color: "#FFB3B3" },
-  { level: 5, name: "Level 5", letters: ["y", "v", "x", "q", "z"], color: "#C3B1E1" },
+  { level: 1, name: "Level 1", letters: ["s", "a", "t", "p", "i", "n"], color: "#16a34a" },
+  { level: 2, name: "Level 2", letters: ["c", "o", "d", "m", "k"], color: "#2563eb" },
+  { level: 3, name: "Level 3", letters: ["e", "r", "g", "b", "h"], color: "#ca8a04" },
+  { level: 4, name: "Level 4", letters: ["w", "j", "l", "u", "f"], color: "#dc2626" },
+  { level: 5, name: "Level 5", letters: ["y", "v", "x", "q", "z"], color: "#7c3aed" },
 ];
 
 export const ALL_LETTERS = LETTER_LEVELS.flatMap(level => level.letters).sort();
