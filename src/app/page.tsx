@@ -38,11 +38,18 @@ export default function Home() {
     DEFAULT_LETTERS
   );
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lettersInCycle, setLettersInCycle] = useLocalStorage<string[]>(
     "peek-a-letter-cycle",
     []
   );
   const lastChangeTimeRef = useRef(0);
+  const isMenuOpenRef = useRef(false);
+
+  // Update ref when state changes
+  useEffect(() => {
+    isMenuOpenRef.current = isMenuOpen;
+  }, [isMenuOpen]);
 
   const availableLetters = useMemo(() => {
     return selectedLetters.length > 0 ? selectedLetters : [];
@@ -96,6 +103,8 @@ export default function Home() {
   }, [availableLetters, displayContent]);
 
   const showNextContent = useCallback(() => {
+    if (isMenuOpenRef.current) return;
+    
     const now = Date.now();
     if (now - lastChangeTimeRef.current < 100) {
       return;
@@ -142,7 +151,7 @@ export default function Home() {
       textColor: letterData?.textColor,
       verticalOffset: letterData?.verticalOffset,
     });
-  }, [availableLetters, lettersInCycle, setLettersInCycle]);
+  }, [availableLetters, lettersInCycle, setLettersInCycle, displayContent.value]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -170,6 +179,7 @@ export default function Home() {
       <LetterSelector
         selectedLetters={selectedLetters}
         setSelectedLetters={setSelectedLetters}
+        onOpenChange={setIsMenuOpen}
       />
     </main>
   );

@@ -17,11 +17,13 @@ import { ScrollArea } from "./ui/scroll-area";
 type LetterSelectorProps = {
   selectedLetters: string[];
   setSelectedLetters: Dispatch<SetStateAction<string[]>>;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export function LetterSelector({
   selectedLetters,
   setSelectedLetters,
+  onOpenChange,
 }: LetterSelectorProps) {
   const handleParentClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -38,7 +40,7 @@ export function LetterSelector({
 
   return (
     <div onClick={handleParentClick} onPointerDown={(e) => e.stopPropagation()}>
-      <Popover>
+      <Popover onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
