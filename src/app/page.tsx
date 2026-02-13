@@ -38,40 +38,40 @@ type DisplayContent = {
 export default function Home() {
   const [hydrated, setHydrated] = useState(false);
   const [selectedLetters, setSelectedLetters] = useLocalStorage<string[]>(
-    "peek-a-letter-selection",
+    "first-read-selection",
     []
   );
 
   const [gameMode, setGameMode] = useLocalStorage<string>(
-    "peek-a-letter-gamemode",
+    "first-read-gamemode",
     "letters"
   );
 
   const [wordDifficulty, setWordDifficulty] = useLocalStorage<string>(
-    "peek-a-letter-word-difficulty",
+    "first-read-word-difficulty",
     "easy"
   );
 
   const [selectedWordLengths, setSelectedWordLengths] = useLocalStorage<
     number[]
-  >("peek-a-letter-word-lengths", [3, 4, 5]);
+  >("first-read-word-lengths", [3, 4, 5]);
 
   const [showCardCount, setShowCardCount] = useLocalStorage<boolean>(
-    "peek-a-letter-show-count",
+    "first-read-show-count",
     true
   );
   const [showTimer, setShowTimer] = useLocalStorage<boolean>(
-    "peek-a-letter-show-timer",
+    "first-read-show-timer",
     true
   );
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lettersInCycle, setLettersInCycle] = useLocalStorage<string[]>(
-    "peek-a-letter-cycle",
+    "first-read-cycle",
     []
   );
   const [wordsInCycle, setWordsInCycle] = useLocalStorage<string[]>(
-    "peek-a-word-cycle",
+    "first-read-word-cycle",
     []
   );
   const lastChangeTimeRef = useRef(0);
@@ -114,7 +114,7 @@ export default function Home() {
   }
 
   const [displayContent, setDisplayContent] = useLocalStorage<DisplayContent>(
-    "peek-a-letter-display-content",
+    "first-read-display-content",
     getInitialLetter()
   );
   const displayContentRef = useRef(displayContent);

@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Peek-a-Letter',
+  title: 'FirstRead',
   description: 'A fun way for kids to learn their letters.',
 };
 

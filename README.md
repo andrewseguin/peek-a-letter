@@ -1,4 +1,4 @@
-# Peek-a-Letter
+# FirstRead
 
 This is a NextJS app for learning letters.
 

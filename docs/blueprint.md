@@ -1,4 +1,4 @@
-# **App Name**: Peek-a-Letter
+# **App Name**: FirstRead
 
 ## Core Features:
 
