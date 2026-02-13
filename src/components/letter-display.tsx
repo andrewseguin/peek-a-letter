@@ -42,7 +42,7 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
     return (
       <Card
         key={content.key}
-        className="relative animate-in fade-in zoom-in-95 duration-300 w-[700px] h-[350px] border-none" // Added relative for absolute positioning of icon
+        className="relative animate-in fade-in zoom-in-95 duration-300 w-[90vw] h-[45vw] max-w-[700px] max-h-[350px] border-none" // Responsive card size
         style={{
           backgroundColor: content.color,
           boxShadow: "0 1px 1px rgba(0,0,0,0.12), 0 2px 2px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12), 0 8px 8px rgba(0,0,0,0.12), 0 16px 16px rgba(0,0,0,0.12)",
@@ -68,10 +68,9 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
           <span
             className={cn(
               "font-headline font-normal leading-none",
-              "select-none [text-shadow:3px_3px_6px_rgba(0,0,0,0.2)]",
-              isWord ? "text-[10rem]" : "text-[17.5rem]"
-            )}
-            style={{
+                          "select-none [text-shadow:3px_3px_6px_rgba(0,0,0,0.2)]",
+                          isWord ? "text-6xl sm:text-8xl md:text-[10rem]" : "text-9xl sm:text-[14rem] md:text-[17.5rem]"
+                        )}            style={{
               color: content.textColor || 'white',
               transform: `translateY(${content.verticalOffset || 0}rem)`,
               transition: 'transform 0.2s ease-out'
