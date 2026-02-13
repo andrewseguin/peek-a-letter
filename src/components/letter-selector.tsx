@@ -18,7 +18,14 @@ type LetterSelectorProps = {
   onOpenChange?: (open: boolean) => void;
   gameMode: string;
   onGameModeChange: (mode: string) => void;
+  wordDifficulty: string;
+  onWordDifficultyChange: (difficulty: string) => void;
+  selectedWordLengths: number[];
+  onSelectedWordLengthsChange: (lengths: number[]) => void;
 };
+
+import { WordDifficultyToggle } from "./word-difficulty-toggle";
+import { WordLengthSelector } from "./word-length-selector";
 
 export function LetterSelector({
   selectedLetters,
@@ -26,6 +33,10 @@ export function LetterSelector({
   onOpenChange,
   gameMode,
   onGameModeChange,
+  wordDifficulty,
+  onWordDifficultyChange,
+  selectedWordLengths,
+  onSelectedWordLengthsChange,
 }: LetterSelectorProps) {
   const handleLetterChange = (letter: string, checked: boolean) => {
     setSelectedLetters((prev) => {
@@ -79,6 +90,32 @@ export function LetterSelector({
               onValueChange={onGameModeChange}
               className="w-full mb-8"
             />
+            {gameMode === 'words' && (
+              <>
+                <div className="mb-8">
+                  <h4 className="font-medium leading-none font-headline text-lg mb-4">
+                    Word Difficulty
+                  </h4>
+                  <WordDifficultyToggle
+                    value={wordDifficulty}
+                    onValueChange={onWordDifficultyChange}
+                    className="w-full"
+                  />
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Hard mode: includes words where vowels sound long or irregular. Cards will display a star.
+                  </p>
+                </div>
+                <div className="mb-8">
+                  <h4 className="font-medium leading-none font-headline text-lg mb-4">
+                    Word Length
+                  </h4>
+                  <WordLengthSelector
+                    selectedLengths={selectedWordLengths}
+                    onSelectedLengthsChange={onSelectedWordLengthsChange}
+                  />
+                </div>
+              </>
+            )}
             <h4 className="font-medium leading-none font-headline text-lg">
               Letters
             </h4>

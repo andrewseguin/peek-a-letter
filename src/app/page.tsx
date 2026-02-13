@@ -3,8 +3,8 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import useLocalStorage from "@/hooks/use-local-storage";
-import { DEFAULT_LETTERS, getLetterInfo } from "@/lib/letters";
-import { WORDS } from "@/lib/words";
+import { DEFAULT_LETTERS, getLetterInfo, LETTER_LEVELS } from "@/lib/letters";
+import { EASY_WORDS, HARD_WORDS } from "@/lib/words";
 import { LetterSelector } from "@/components/letter-selector";
 import { LetterDisplay } from "@/components/letter-display";
 import { FullscreenToggle } from "@/components/fullscreen-toggle";
@@ -32,6 +32,7 @@ type DisplayContent = {
   color?: string;
   textColor?: string;
   verticalOffset?: number;
+  isHardWord?: boolean; // New property to indicate if the word is hard
 };
 
 export default function Home() {
@@ -46,6 +47,15 @@ export default function Home() {
     "letters"
   );
 
+  const [wordDifficulty, setWordDifficulty] = useLocalStorage<string>(
+    "peek-a-letter-word-difficulty",
+    "easy"
+  );
+
+  const [selectedWordLengths, setSelectedWordLengths] = useLocalStorage<
+    number[]
+  >("peek-a-letter-word-lengths", [3, 4, 5]);
+
   const [showCardCount, setShowCardCount] = useLocalStorage<boolean>(
     "peek-a-letter-show-count",
     true
@@ -58,6 +68,10 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lettersInCycle, setLettersInCycle] = useLocalStorage<string[]>(
     "peek-a-letter-cycle",
+    []
+  );
+  const [wordsInCycle, setWordsInCycle] = useLocalStorage<string[]>(
+    "peek-a-word-cycle",
     []
   );
   const lastChangeTimeRef = useRef(0);
@@ -110,6 +124,10 @@ export default function Home() {
     setLettersInCycle([]);
   }, [availableLetters, setLettersInCycle]);
 
+  useEffect(() => {
+    setWordsInCycle([]);
+  }, [availableLetters, wordDifficulty, setWordsInCycle]);
+
   const showNextContent = useCallback((force = false) => {
     if (isMenuOpenRef.current && !force) return;
     
@@ -126,8 +144,15 @@ export default function Home() {
     }
 
     if (gameMode === "words") {
-      const possibleWords = WORDS.filter((word) => {
+      const wordPool =
+        wordDifficulty === "easy"
+          ? EASY_WORDS
+          : [...EASY_WORDS, ...HARD_WORDS];
+      const possibleWords = wordPool.filter((word) => {
         const wordLetters = word.split("");
+        if (!selectedWordLengths.includes(word.length)) {
+          return false;
+        }
         return wordLetters.every((letter) => availableLetters.includes(letter));
       });
 
@@ -140,15 +165,55 @@ export default function Home() {
         return;
       }
       setCardCount((prev) => prev + 1);
-      const newWord = possibleWords[Math.floor(Math.random() * possibleWords.length)];
-      const firstLetter = newWord[0];
-      const letterData = getLetterInfo(firstLetter);
+
+      let currentCycle = wordsInCycle;
+      if (currentCycle.length === 0) {
+        currentCycle = shuffle([...possibleWords]);
+        if (
+          possibleWords.length > 1 &&
+          currentCycle[0] === displayContentRef.current.value
+        ) {
+          const randomIndex = 1 + Math.floor(Math.random() * (currentCycle.length - 1));
+          [currentCycle[0], currentCycle[randomIndex]] = [
+            currentCycle[randomIndex],
+            currentCycle[0],
+          ];
+        }
+      }
+
+const getHighestLevelInfoForWord = (word: string) => {
+  let highestLevel = -1;
+  let color = "#000000"; // Default color
+  let textColor = "#FFFFFF"; // Default text color
+
+  for (const char of word) {
+    const letterInfo = getLetterInfo(char);
+    if (letterInfo) {
+      const level = LETTER_LEVELS.findIndex(lvl => lvl.letters.some(l => l.char === char));
+      if (level > highestLevel) {
+        highestLevel = level;
+        color = letterInfo.color || color;
+        textColor = letterInfo.textColor || textColor;
+      }
+    }
+  }
+  return { color, textColor };
+};
+
+// ... inside the showNextContent function, within the gameMode === 'words' block
+      const newWord = currentCycle[0];
+      const newCycle = currentCycle.slice(1);
+      setWordsInCycle(newCycle);
+
+      const { color, textColor } = getHighestLevelInfoForWord(newWord);
+      const isHard = HARD_WORDS.includes(newWord);
       setDisplayContent({
         key: Date.now().toString(),
         type: "word",
         value: newWord,
-        color: letterData?.color,
-        textColor: letterData?.textColor,
+        color: color,
+        textColor: textColor,
+        isHardWord: isHard,
       });
       return;
     }
@@ -183,7 +248,7 @@ export default function Home() {
       textColor: letterData?.textColor,
       verticalOffset: letterData?.verticalOffset,
     });
-  }, [availableLetters, lettersInCycle, setLettersInCycle, gameMode, setDisplayContent]);
+  }, [availableLetters, lettersInCycle, setLettersInCycle, gameMode, wordDifficulty, setDisplayContent, wordsInCycle, setWordsInCycle, selectedWordLengths]);
 
   const prevSelectedLettersRef = useRef<string[]>(selectedLetters);
 
@@ -268,6 +333,17 @@ export default function Home() {
     }
   }, [gameMode, showNextContent]);
 
+  useEffect(() => {
+    if (
+      gameMode === 'words' &&
+      displayContentRef.current.type === 'word' &&
+      !selectedWordLengths.includes(displayContentRef.current.value.length)
+    ) {
+      setWordsInCycle([]); // Reset the cycle
+      showNextContent(true); // Show a new word from the new valid pool
+    }
+  }, [selectedWordLengths, gameMode, showNextContent, setWordsInCycle]);
+
   const handleInteraction = () => {
     showNextContent();
   };
@@ -308,6 +384,10 @@ export default function Home() {
           onOpenChange={setIsMenuOpen}
           gameMode={gameMode}
           onGameModeChange={setGameMode}
+          wordDifficulty={wordDifficulty}
+          onWordDifficultyChange={setWordDifficulty}
+          selectedWordLengths={selectedWordLengths}
+          onSelectedWordLengthsChange={setSelectedWordLengths}
         />
         <AppSettings
           showCardCount={showCardCount}

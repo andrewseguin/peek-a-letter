@@ -1,8 +1,15 @@
 
 "use client";
 
+import { Star } from "lucide-react"; // Import the Star icon
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"; // Import tooltip components
 
 type DisplayContent = {
   key: string;
@@ -11,6 +18,7 @@ type DisplayContent = {
   color?: string;
   textColor?: string;
   verticalOffset?: number;
+  isHardWord?: boolean; // New property to indicate if the word is hard
 };
 
 type LetterDisplayProps = {
@@ -31,33 +39,46 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
 
   const isWord = content.type === "word";
 
-  return (
-    <Card
-      key={content.key}
-      className="animate-in fade-in zoom-in-95 duration-300 w-[700px] h-[350px] border-none"
-      style={{ 
-        backgroundColor: content.color,
-        boxShadow: "0 1px 1px rgba(0,0,0,0.12), 0 2px 2px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12), 0 8px 8px rgba(0,0,0,0.12), 0 16px 16px rgba(0,0,0,0.12)",
-        borderTop: "1px solid rgba(255,255,255,0.2)",
-        borderLeft: "1px solid rgba(255,255,255,0.1)",
-      }}
-    >
-      <CardContent className="p-0 h-full flex items-center justify-center">
-        <span
-          className={cn(
-            "font-headline font-normal leading-none",
-            "select-none [text-shadow:3px_3px_6px_rgba(0,0,0,0.2)]",
-            isWord ? "text-[10rem]" : "text-[17.5rem]"
-          )}
-          style={{
-            color: content.textColor || 'white',
-            transform: `translateY(${content.verticalOffset || 0}rem)`,
-            transition: 'transform 0.2s ease-out'
-          }}
-        >
-          {content.value}
-        </span>
-      </CardContent>
-    </Card>
-  );
-}
+    return (
+      <Card
+        key={content.key}
+        className="relative animate-in fade-in zoom-in-95 duration-300 w-[700px] h-[350px] border-none" // Added relative for absolute positioning of icon
+        style={{
+          backgroundColor: content.color,
+          boxShadow: "0 1px 1px rgba(0,0,0,0.12), 0 2px 2px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12), 0 8px 8px rgba(0,0,0,0.12), 0 16px 16px rgba(0,0,0,0.12)",
+          borderTop: "1px solid rgba(255,255,255,0.2)",
+          borderLeft: "1px solid rgba(255,255,255,0.1)",
+        }}
+      >
+        {content.type === "word" && content.isHardWord && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="absolute top-4 right-4 text-foreground/50">
+                  <Star className="h-6 w-6" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Hard Word</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+        <CardContent className="p-0 h-full flex items-center justify-center">
+          <span
+            className={cn(
+              "font-headline font-normal leading-none",
+              "select-none [text-shadow:3px_3px_6px_rgba(0,0,0,0.2)]",
+              isWord ? "text-[10rem]" : "text-[17.5rem]"
+            )}
+            style={{
+              color: content.textColor || 'white',
+              transform: `translateY(${content.verticalOffset || 0}rem)`,
+              transition: 'transform 0.2s ease-out'
+            }}
+          >
+            {content.value}
+          </span>
+        </CardContent>
+      </Card>
+    );}
