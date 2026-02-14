@@ -1,7 +1,8 @@
 import type {NextConfig} from 'next';
+import withPWA from 'next-pwa';
 
 const nextConfig: NextConfig = {
-  output: 'export',
+  output: 'standalone',
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
   typescript: {
     ignoreBuildErrors: true,
@@ -34,4 +35,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA({
+  dest: 'public',
+})(nextConfig);
