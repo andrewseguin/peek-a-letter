@@ -52,6 +52,18 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
     }
   }
 
+  function speakWord(event: React.MouseEvent) {
+    event.stopPropagation();
+    if ('speechSynthesis' in window && !isPlaying) {
+      const utterance = new SpeechSynthesisUtterance(content.value);
+      utterance.rate = 0.8;
+      utterance.pitch = 1.8;
+      utterance.onstart = () => setIsPlaying(true);
+      utterance.onend = () => setIsPlaying(false);
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+
   if (content.type === "message") {
     return (
       <div
@@ -110,6 +122,17 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
               size="icon-lg"
               className="absolute bottom-4 right-4 text-foreground/70 hover:text-foreground"
               onClick={(e) => speakLetter(e)}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              {isPlaying ? <Volume2 className="h-12 w-12" /> : <Speaker className="h-12 w-12" />}
+            </Button>
+          )}
+          {content.type === "word" && (
+            <Button
+              variant="ghost"
+              size="icon-lg"
+              className="absolute bottom-4 right-4 text-foreground/70 hover:text-foreground"
+              onClick={(e) => speakWord(e)}
               onPointerDown={(e) => e.stopPropagation()}
             >
               {isPlaying ? <Volume2 className="h-12 w-12" /> : <Speaker className="h-12 w-12" />}
