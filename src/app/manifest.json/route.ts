@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = "force-static";
+
 export function GET() {
   const isProd = process.env.NODE_ENV === 'production';
   const basePath = isProd ? '/first-read' : '';
