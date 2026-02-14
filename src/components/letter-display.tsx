@@ -52,15 +52,85 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
     }
   }
 
+  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
+
+  function speakLetter(event: React.MouseEvent) {
+    event.stopPropagation();
+    if (audioCache && !isPlaying) {
+      const audio = audioCache[content.value.toLowerCase()];
+      if (audio) {
+        setIsPlaying(true);
+        audio.onended = () => {
+          setIsPlaying(false);
+        };
+        audio.play().catch(e => {
+          console.error("Error playing audio:", e)
+          setIsPlaying(false);
+        });
+      }
+    } else if (isPlaying) {
+        // Optional: logic to stop the sound if it's already playing
+    }
+  }
+
   function speakWord(event: React.MouseEvent) {
     event.stopPropagation();
-    if ('speechSynthesis' in window && !isPlaying) {
-      const utterance = new SpeechSynthesisUtterance(content.value);
-      utterance.rate = 0.8;
-      utterance.pitch = 1.4;
-      utterance.onstart = () => setIsPlaying(true);
-      utterance.onend = () => setIsPlaying(false);
-      window.speechSynthesis.speak(utterance);
+    if (isPlaying) return;
+
+    if (content.isHardWord) {
+      // For hard words, just say the word
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(content.value);
+        utterance.rate = 0.1;
+        utterance.pitch = 0.1;
+        utterance.onstart = () => setIsPlaying(true);
+        utterance.onend = () => setIsPlaying(false);
+        window.speechSynthesis.speak(utterance);
+      }
+    } else {
+      // For easy words, sound it out
+      if (!audioCache) return;
+
+      const letters = content.value.split('');
+      let currentIndex = 0;
+      setIsPlaying(true);
+
+      const playNextLetter = () => {
+        if (currentIndex < letters.length) {
+          setHighlightedIndex(currentIndex);
+          const letter = letters[currentIndex];
+          const audio = audioCache[letter];
+          if (audio) {
+            audio.onended = () => {
+              currentIndex++;
+              playNextLetter();
+            };
+            audio.currentTime = 0;
+            audio.play().catch(e => {
+              console.error("Error playing audio:", e);
+              setIsPlaying(false);
+              setHighlightedIndex(null);
+            });
+          } else {
+            currentIndex++;
+            playNextLetter();
+          }
+        } else {
+          // After all letters, say the whole word
+          setHighlightedIndex(null); // Highlight the whole word
+          if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(content.value);
+            utterance.rate = 0.8;
+            utterance.pitch = 1.4;
+            utterance.onend = () => setIsPlaying(false);
+            window.speechSynthesis.speak(utterance);
+          } else {
+            setIsPlaying(false);
+          }
+        }
+      };
+
+      playNextLetter();
     }
   }
 
@@ -103,19 +173,41 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
           </TooltipProvider>
         )}
         <CardContent className="p-0 h-full flex items-center justify-center">
-          <span
-            className={cn(
+          {isWord ? (
+            <div className={cn(
               "font-headline font-normal leading-none",
-                          "select-none [text-shadow:3px_3px_6px_rgba(0,0,0,0.2)]",
-                          isWord ? "text-6xl sm:text-8xl md:text-[10rem]" : "text-9xl sm:text-[14rem] md:text-[17.5rem]"
-                        )}            style={{
+              "select-none [text-shadow:3px_3px_6px_rgba(0,0,0,0.2)]",
+              "text-6xl sm:text-8xl md:text-[10rem]"
+            )} style={{
               color: content.textColor || 'white',
               transform: `translateY(${content.verticalOffset || 0}rem)`,
               transition: 'transform 0.2s ease-out'
-            }}
-          >
-            {content.value}
-          </span>
+            }}>
+              {content.value.split('').map((letter, index) => (
+                <span key={index} className={cn(
+                  highlightedIndex === index && "opacity-50",
+                  highlightedIndex === null && "opacity-100 transition-opacity duration-500"
+                )}>
+                  {letter}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <span
+              className={cn(
+                "font-headline font-normal leading-none",
+                "select-none [text-shadow:3px_3px_6px_rgba(0,0,0,0.2)]",
+                "text-9xl sm:text-[14rem] md:text-[17.5rem]"
+              )}
+              style={{
+                color: content.textColor || 'white',
+                transform: `translateY(${content.verticalOffset || 0}rem)`,
+                transition: 'transform 0.2s ease-out'
+              }}
+            >
+              {content.value}
+            </span>
+          )}
           {content.type === "letter" && (
             <Button
               variant="ghost"
