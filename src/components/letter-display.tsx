@@ -57,7 +57,7 @@ export function LetterDisplay({ content }: LetterDisplayProps) {
     if ('speechSynthesis' in window && !isPlaying) {
       const utterance = new SpeechSynthesisUtterance(content.value);
       utterance.rate = 0.8;
-      utterance.pitch = 1.8;
+      utterance.pitch = 1.4;
       utterance.onstart = () => setIsPlaying(true);
       utterance.onend = () => setIsPlaying(false);
       window.speechSynthesis.speak(utterance);
