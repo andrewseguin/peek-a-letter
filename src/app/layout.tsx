@@ -15,7 +15,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const basePath = process.env.NODE_ENV === 'production' ? '/first-read' : '';
-  console.log("NODE_ENV in layout.tsx:", process.env.NODE_ENV);
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
