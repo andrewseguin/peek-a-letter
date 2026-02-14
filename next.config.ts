@@ -37,4 +37,5 @@ const nextConfig: NextConfig = {
 
 export default withPWA({
   dest: 'public',
+  scope: process.env.NEXT_PUBLIC_BASE_PATH || '/',
 })(nextConfig as any);
