@@ -118,7 +118,7 @@ export default function Home() {
   const availableLetters = useMemo(() => {
     return selectedLetters.length > 0 ? selectedLetters : [];
   }, [selectedLetters]);
-  
+
   const getInitialLetter = () => {
     const letter = availableLetters.length > 0 ? availableLetters[0] : 'a';
     const data = getLetterInfo(letter);
@@ -143,7 +143,7 @@ export default function Home() {
   useEffect(() => {
     displayContentRef.current = displayContent;
   }, [displayContent]);
-  
+
   useEffect(() => {
     setLettersInCycle([]);
   }, [availableLetters, setLettersInCycle]);
@@ -154,7 +154,7 @@ export default function Home() {
 
   const showNextContent = useCallback((force = false, isInteraction = false) => {
     if (isMenuOpenRef.current && !force) return;
-    
+
     const now = Date.now();
     if (now - lastChangeTimeRef.current < 100) {
       return;
@@ -254,7 +254,7 @@ export default function Home() {
         ];
       }
     }
-    
+
     const newLetter = currentCycle[0];
     const newCycle = currentCycle.slice(1);
     setLettersInCycle(newCycle);
@@ -282,7 +282,7 @@ export default function Home() {
       prevSelectedLettersRef.current = selectedLetters;
     }
   }, [gameMode, selectedLetters, showNextContent]);
-  
+
   useEffect(() => {
     if (gameMode === 'letters') {
       // If selectedLetters is empty, always show the message.
@@ -357,14 +357,14 @@ export default function Home() {
         setHistory([...newHistory, updatedContent]);
         setHistoryIndex(newHistory.length);
       }
-    
+
       prevSelectedLettersRef.current = selectedLetters;
     }
   }, [gameMode, selectedLetters, history, historyIndex, displayContent]);
-  
+
   const prevGameModeRef = useRef(gameMode);
   useEffect(() => {
-    if(prevGameModeRef.current !== gameMode) {
+    if (prevGameModeRef.current !== gameMode) {
       showNextContent(true, false);
       prevGameModeRef.current = gameMode;
     }
@@ -383,8 +383,45 @@ export default function Home() {
     }
   }, [selectedWordLengths, gameMode, showNextContent, wordDifficulty]);
 
-  const handleInteraction = () => {
-    showNextContent(false, true);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    touchStartRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!touchStartRef.current) return;
+
+    const deltaX = e.clientX - touchStartRef.current.x;
+    const deltaY = e.clientY - touchStartRef.current.y;
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
+
+    touchStartRef.current = null;
+
+    // Check if it's a tap (minimal movement)
+    if (absDeltaX < 10 && absDeltaY < 10) {
+      showNextContent(false, true);
+      return;
+    }
+
+    // Check if it's a swipe (significant horizontal movement, more than vertical)
+    if (absDeltaX > 50 && absDeltaX > absDeltaY) {
+      if (deltaX > 0) {
+        // Swipe Right -> Previous (like ArrowLeft)
+        if (historyIndex > 0) {
+          setHistoryIndex((prev) => prev - 1);
+        }
+      } else {
+        // Swipe Left -> Next (like ArrowRight)
+        if (historyIndex < history.length - 1) {
+          setHistoryIndex((prev) => prev + 1);
+        } else {
+          // If at the end of history, generate new content
+          showNextContent(false, true);
+        }
+      }
+    }
   };
 
   useEffect(() => {
@@ -423,8 +460,9 @@ export default function Home() {
 
   return (
     <main
-      className="flex h-svh w-screen cursor-pointer items-center justify-center bg-background overflow-hidden relative focus:outline-none"
-      onPointerDown={handleInteraction}
+      className="flex h-svh w-screen cursor-pointer items-center justify-center bg-background overflow-hidden relative focus:outline-none touch-none"
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
       tabIndex={-1}
     >
       <LetterDisplay content={displayContent} />
