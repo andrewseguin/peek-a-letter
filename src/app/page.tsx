@@ -146,6 +146,29 @@ export default function Home() {
     displayContentRef.current = displayContent;
   }, [displayContent]);
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
   useEffect(() => {
     setLettersInCycle([]);
   }, [availableLetters, setLettersInCycle]);
@@ -507,29 +530,31 @@ export default function Home() {
       tabIndex={-1}
     >
       <LetterDisplay content={displayContent} />
-      <div className="absolute top-4 right-4 flex items-center gap-2" onPointerDown={(e) => e.stopPropagation()}>
-        <LetterSelector
-          open={isMenuOpen}
-          selectedLetters={selectedLetters}
-          setSelectedLetters={setSelectedLetters}
-          onOpenChange={handleMenuOpenChange}
-          gameMode={gameMode}
-          onGameModeChange={setGameMode}
-          wordDifficulty={wordDifficulty}
-          onWordDifficultyChange={setWordDifficulty}
-          selectedWordLengths={selectedWordLengths}
-          onSelectedWordLengthsChange={setSelectedWordLengths}
-        />
-        <AppSettings
-          showCardCount={showCardCount}
-          onShowCardCountChange={setShowCardCount}
-          showTimer={showTimer}
-          onShowTimerChange={setShowTimer}
-          open={isSettingsOpen}
-          onOpenChange={handleSettingsOpenChange}
-        />
-        <FullscreenToggle />
-      </div>
+      {!isFullscreen && (
+        <div className="absolute top-4 right-4 flex items-center gap-2" onPointerDown={(e) => e.stopPropagation()}>
+          <LetterSelector
+            open={isMenuOpen}
+            selectedLetters={selectedLetters}
+            setSelectedLetters={setSelectedLetters}
+            onOpenChange={handleMenuOpenChange}
+            gameMode={gameMode}
+            onGameModeChange={setGameMode}
+            wordDifficulty={wordDifficulty}
+            onWordDifficultyChange={setWordDifficulty}
+            selectedWordLengths={selectedWordLengths}
+            onSelectedWordLengthsChange={setSelectedWordLengths}
+          />
+          <AppSettings
+            showCardCount={showCardCount}
+            onShowCardCountChange={setShowCardCount}
+            showTimer={showTimer}
+            onShowTimerChange={setShowTimer}
+            open={isSettingsOpen}
+            onOpenChange={handleSettingsOpenChange}
+          />
+          <FullscreenToggle isFullscreen={isFullscreen} onToggle={toggleFullscreen} />
+        </div>
+      )}
       {(showCardCount || showTimer) && (
         <SessionStats
           cardCount={cardCount}
